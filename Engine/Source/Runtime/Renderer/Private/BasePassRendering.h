@@ -409,6 +409,7 @@ public:
 		static const auto SupportAllShaderPermutations = IConsoleManager::Get().FindTConsoleVariableDataInt(TEXT("r.SupportAllShaderPermutations"));
 
 		const bool IsSingleLayerWater = Parameters.MaterialParameters.ShadingModels.HasShadingModel(MSM_SingleLayerWater);
+		const bool IsDoubleLayerWater = Parameters.MaterialParameters.ShadingModels.HasShadingModel(MSM_DoubleLayerWater);
 
 		const bool bTranslucent = IsTranslucentBlendMode(Parameters.MaterialParameters.BlendMode);
 		const bool bForceAllPermutations = SupportAllShaderPermutations && SupportAllShaderPermutations->GetValueOnAnyThread() != 0;
@@ -419,6 +420,7 @@ public:
 			|| bTranslucent
 			// Some lightmap policies (eg Simple Forward) always require skylight support
 			|| IsSingleLayerWater
+			|| IsDoubleLayerWater
 			|| LightMapPolicyType::RequiresSkylight()
 			|| ((bProjectSupportsStationarySkylight || IsForwardShadingEnabled(Parameters.Platform)) && Parameters.MaterialParameters.ShadingModels.IsLit());
 		return bCacheShaders
@@ -436,8 +438,9 @@ public:
 
 		const bool bTranslucent = IsTranslucentBlendMode(Parameters.MaterialParameters.BlendMode);
 		const bool bIsSingleLayerWater = Parameters.MaterialParameters.ShadingModels.HasShadingModel(MSM_SingleLayerWater);
+		const bool bIsDoubleLayerWater = Parameters.MaterialParameters.ShadingModels.HasShadingModel(MSM_DoubleLayerWater);
 		const bool bSupportVirtualShadowMap = IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
-		if (bSupportVirtualShadowMap && (bTranslucent || bIsSingleLayerWater))
+		if (bSupportVirtualShadowMap && (bTranslucent || bIsSingleLayerWater || bIsDoubleLayerWater))
 		{
 			FVirtualShadowMapArray::SetShaderDefines(OutEnvironment);
 			OutEnvironment.SetDefine(TEXT("VIRTUAL_SHADOW_MAP"), 1);

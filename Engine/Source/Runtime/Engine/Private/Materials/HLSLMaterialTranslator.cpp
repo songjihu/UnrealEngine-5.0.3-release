@@ -819,7 +819,7 @@ bool FHLSLMaterialTranslator::Translate()
 			Chunk[MP_CustomData1] = Material->CompilePropertyAndSetMaterialProperty(MP_CustomData1, this);
 			Chunk[MP_AmbientOcclusion] = Material->CompilePropertyAndSetMaterialProperty(MP_AmbientOcclusion, this);
 
-			if (IsTranslucentBlendMode(BlendMode) || MaterialShadingModels.HasShadingModel(MSM_SingleLayerWater))
+			if (IsTranslucentBlendMode(BlendMode) || MaterialShadingModels.HasShadingModel(MSM_SingleLayerWater) || MaterialShadingModels.HasShadingModel(MSM_DoubleLayerWater))
 			{
 				int32 UserRefraction = ForceCast(Material->CompilePropertyAndSetMaterialProperty(MP_Refraction, this), MCT_Float1);
 				int32 RefractionDepthBias = ForceCast(ScalarParameter(FName(TEXT("RefractionDepthBias")), Material->GetRefractionDepthBiasValue()), MCT_Float1);
@@ -1052,13 +1052,13 @@ bool FHLSLMaterialTranslator::Translate()
 			Errorf(TEXT("Sky materials must be opaque or masked, and unlit. They are expected to completely replace the background."));
 		}
 
-		if (MaterialShadingModels.HasShadingModel(MSM_SingleLayerWater))
+		if (MaterialShadingModels.HasShadingModel(MSM_SingleLayerWater) || MaterialShadingModels.HasShadingModel(MSM_DoubleLayerWater))
 		{
 			if (BlendMode != BLEND_Opaque && BlendMode != BLEND_Masked)
 			{
 				Errorf(TEXT("SingleLayerWater materials must be opaque or masked."));
 			}
-			if (!MaterialShadingModels.HasOnlyShadingModel(MSM_SingleLayerWater))
+			if (!MaterialShadingModels.HasOnlyShadingModel(MSM_SingleLayerWater) || !MaterialShadingModels.HasOnlyShadingModel(MSM_DoubleLayerWater))
 			{
 				Errorf(TEXT("SingleLayerWater materials cannot be combined with other shading models.")); // Simply untested for now
 			}
@@ -1638,6 +1638,11 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_SINGLELAYERWATER"), TEXT("1"));
 			NumSetMaterials++;
 		}
+		if (ShadingModels.HasShadingModel(MSM_DoubleLayerWater))
+		{
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_DOUBLELAYERWATER"), TEXT("1"));
+			NumSetMaterials++;
+		}
 		if (ShadingModels.HasShadingModel(MSM_ThinTranslucent))
 		{
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_THIN_TRANSLUCENT"), TEXT("1"));
@@ -1646,7 +1651,7 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 			bMaterialRequestsDualSourceBlending = true;
 		}
 
-		if (ShadingModels.HasShadingModel(MSM_SingleLayerWater) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(Platform))
+		if ((ShadingModels.HasShadingModel(MSM_SingleLayerWater) || ShadingModels.HasShadingModel(MSM_DoubleLayerWater)) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(Platform))
 		{
 			OutEnvironment.SetDefine(TEXT("DISABLE_FORWARD_LOCAL_LIGHTS"), TEXT("1"));
 		}
@@ -9134,7 +9139,7 @@ int32 FHLSLMaterialTranslator::SceneDepthWithoutWater(int32 Offset, int32 Viewpo
 		return Errorf(TEXT("Cannot read scene depth without water from the vertex shader."));
 	}
 
-	if (!Material->GetShadingModels().HasShadingModel(MSM_SingleLayerWater))
+	if (!Material->GetShadingModels().HasShadingModel(MSM_SingleLayerWater) || !Material->GetShadingModels().HasShadingModel(MSM_DoubleLayerWater))
 	{
 		return Errorf(TEXT("Can only read scene depth below water when material Shading Model is Single Layer Water."));
 	}

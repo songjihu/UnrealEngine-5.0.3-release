@@ -1228,7 +1228,7 @@ void FStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterface* PD
 							&& !Material.MaterialModifiesMeshPosition_RenderThread()
 							&& Material.GetMaterialDomain() == MD_Surface
 							&& !Material.IsSky()
-							&& !Material.GetShadingModels().HasShadingModel(MSM_SingleLayerWater);
+							&& (!Material.GetShadingModels().HasShadingModel(MSM_SingleLayerWater)|| !Material.GetShadingModels().HasShadingModel(MSM_DoubleLayerWater));
 
 						bAllSectionsCastShadow &= Section.bCastShadow;
 					}

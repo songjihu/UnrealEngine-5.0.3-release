@@ -153,6 +153,7 @@ void FShaderCompileUtilities::ApplyFetchEnvironment(FShaderMaterialPropertyDefin
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_CLOTH);
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_EYE);
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_SINGLELAYERWATER);
+	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_DOUBLELAYERWATER);
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_THIN_TRANSLUCENT);
 
 	FETCH_COMPILE_BOOL(MATERIAL_FULLY_ROUGH);
@@ -1669,6 +1670,9 @@ static void SetSlotsForShadingModelType(bool Slots[], EMaterialShadingModel Shad
 	case MSM_SingleLayerWater:
 		SetSharedGBufferSlots(Slots);
 		break;
+	case MSM_DoubleLayerWater:
+		SetSharedGBufferSlots(Slots);
+		break;
 	case MSM_ThinTranslucent:
 		// thin translucent doesn't write to the GBuffer
 		break;
@@ -1706,7 +1710,7 @@ static void DetermineUsedMaterialSlots(
 	const FShaderCompilerDefines& Compiler,
 	ERHIFeatureLevel::Type FEATURE_LEVEL)
 {
-	bool bWriteEmissive = Dst.NEEDS_BASEPASS_VERTEX_FOGGING || Mat.USES_EMISSIVE_COLOR || SrcGlobal.ALLOW_STATIC_LIGHTING || Mat.MATERIAL_SHADINGMODEL_SINGLELAYERWATER;
+	bool bWriteEmissive = Dst.NEEDS_BASEPASS_VERTEX_FOGGING || Mat.USES_EMISSIVE_COLOR || SrcGlobal.ALLOW_STATIC_LIGHTING || Mat.MATERIAL_SHADINGMODEL_SINGLELAYERWATER || Mat.MATERIAL_SHADINGMODEL_DOUBLELAYERWATER;
 	bool bHasTangent = SrcGlobal.GBUFFER_HAS_TANGENT;
 	bool bHasVelocity = Dst.WRITES_VELOCITY_TO_GBUFFER;
 	bool bHasStaticLighting = Dst.GBUFFER_HAS_PRECSHADOWFACTOR || Dst.WRITES_PRECSHADOWFACTOR_TO_GBUFFER;
@@ -1779,6 +1783,13 @@ static void DetermineUsedMaterialSlots(
 	{
 		// single layer water uses standard slots
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+	}
+
+	if (Mat.MATERIAL_SHADINGMODEL_DOUBLELAYERWATER)
+	{
+		// single layer water uses standard slots
+		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+		Slots[GBS_CustomData] = true;
 	}
 
 	// doesn't write to GBuffer

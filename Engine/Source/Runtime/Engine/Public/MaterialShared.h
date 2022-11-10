@@ -1861,7 +1861,7 @@ public:
 	/** Returns whether this material should be considered for casting dynamic shadows. */
 	inline bool ShouldCastDynamicShadows() const
 	{
-		return !GetShadingModels().HasOnlyShadingModel(MSM_SingleLayerWater) &&
+		return (!GetShadingModels().HasOnlyShadingModel(MSM_SingleLayerWater) || !GetShadingModels().HasOnlyShadingModel(MSM_DoubleLayerWater)) &&
 				(GetBlendMode() == BLEND_Opaque
  				 || GetBlendMode() == BLEND_Masked
   				 || (GetBlendMode() == BLEND_Translucent && GetCastDynamicShadowAsMasked()));
@@ -3381,7 +3381,7 @@ struct FMaterialShaderParameters
 inline bool ShouldIncludeMaterialInDefaultOpaquePass(const FMaterial& Material)
 {
 	return !Material.IsSky()
-		&& !Material.GetShadingModels().HasShadingModel(MSM_SingleLayerWater);
+		&& (!Material.GetShadingModels().HasShadingModel(MSM_SingleLayerWater) || !Material.GetShadingModels().HasShadingModel(MSM_DoubleLayerWater));
 }
 
 template<typename T>

@@ -126,6 +126,7 @@ public:
 			const FMaterial& Material = Mesh.MaterialRenderProxy->GetIncompleteMaterialWithFallback(FeatureLevel);
 			bool bUseSkyMaterial = Material.IsSky();
 			bool bUseSingleLayerWaterMaterial = Material.GetShadingModels().HasShadingModel(MSM_SingleLayerWater);
+			bool bUseDoubleLayerWaterMaterial = Material.GetShadingModels().HasShadingModel(MSM_DoubleLayerWater);
 			bool bUseAnisotropy = Material.GetShadingModels().HasAnyShadingModel({MSM_DefaultLit, MSM_ClearCoat}) && Material.MaterialUsesAnisotropy_RenderThread();
 			bool bSupportsNaniteRendering = SupportsNaniteRendering(StaticMesh->VertexFactory, PrimitiveSceneProxy, Mesh.MaterialRenderProxy, FeatureLevel);
 			bool bSupportsGPUScene = StaticMesh->VertexFactory->SupportsGPUScene(FeatureLevel);
@@ -136,6 +137,7 @@ public:
 				bSupportsCachingMeshDrawCommands,
 				bUseSkyMaterial,
 				bUseSingleLayerWaterMaterial,
+				bUseDoubleLayerWaterMaterial,
 				bUseAnisotropy,
 				bSupportsNaniteRendering,
 				bSupportsGPUScene,

@@ -2731,7 +2731,8 @@ static void AddStrataShadingModelFromMaterialShadingModel(FStrataMaterialInfo& O
 	if (InShadingModels.HasShadingModel(MSM_Hair))				{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_Hair); }
 	if (InShadingModels.HasShadingModel(MSM_Cloth))				{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_DefaultLit); }
 	if (InShadingModels.HasShadingModel(MSM_Eye))				{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_SubsurfaceLit); }
-	if (InShadingModels.HasShadingModel(MSM_SingleLayerWater))	{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_SingleLayerWater); }
+	if (InShadingModels.HasShadingModel(MSM_SingleLayerWater)) { OutInfo.AddShadingModel(EStrataShadingModel::SSM_SingleLayerWater); }
+	if (InShadingModels.HasShadingModel(MSM_DoubleLayerWater))	{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_DoubleLayerWater); }
 	if (InShadingModels.HasShadingModel(MSM_ThinTranslucent))	{ OutInfo.AddShadingModel(EStrataShadingModel::SSM_DefaultLit); }
 }
 
@@ -4007,6 +4008,12 @@ void UMaterial::RebuildShadingModelField()
 			{
 				MaterialDomain = EMaterialDomain::MD_Surface;
 				ShadingModel = MSM_SingleLayerWater;
+				BlendMode = EBlendMode::BLEND_Opaque; // STRATA_TODO water can also be masked: check Mask input from the main node to automatically enabled that?
+			}
+			else if (StrataMaterialInfo.HasOnlyShadingModel(SSM_DoubleLayerWater))
+			{
+				MaterialDomain = EMaterialDomain::MD_Surface;
+				ShadingModel = MSM_DoubleLayerWater;
 				BlendMode = EBlendMode::BLEND_Opaque; // STRATA_TODO water can also be masked: check Mask input from the main node to automatically enabled that?
 			}
 
@@ -5381,10 +5388,10 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = false;
 		break;
 	case MP_Refraction:
-		Active = (bIsTranslucentBlendMode && BlendMode != BLEND_AlphaHoldout && BlendMode != BLEND_Modulate) || ShadingModels.HasShadingModel(MSM_SingleLayerWater);
+		Active = (bIsTranslucentBlendMode && BlendMode != BLEND_AlphaHoldout && BlendMode != BLEND_Modulate) || ShadingModels.HasShadingModel(MSM_SingleLayerWater) || ShadingModels.HasShadingModel(MSM_DoubleLayerWater);
 		break;
 	case MP_Opacity:
-		Active = (bIsTranslucentBlendMode && BlendMode != BLEND_Modulate) || ShadingModels.HasShadingModel(MSM_SingleLayerWater);
+		Active = (bIsTranslucentBlendMode && BlendMode != BLEND_Modulate) || ShadingModels.HasShadingModel(MSM_SingleLayerWater) || ShadingModels.HasShadingModel(MSM_DoubleLayerWater);
 		if (IsSubsurfaceShadingModel(ShadingModels))
 		{
 			Active = true;
@@ -5418,10 +5425,10 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Subsurface, MSM_PreintegratedSkin, MSM_TwoSidedFoliage, MSM_Cloth });
 		break;
 	case MP_CustomData0:
-		Active = ShadingModels.HasAnyShadingModel({ MSM_ClearCoat, MSM_Hair, MSM_Cloth, MSM_Eye, MSM_SubsurfaceProfile });
+		Active = ShadingModels.HasAnyShadingModel({ MSM_ClearCoat, MSM_Hair, MSM_Cloth, MSM_Eye, MSM_SubsurfaceProfile ,MSM_DoubleLayerWater});
 		break;
 	case MP_CustomData1:
-		Active = ShadingModels.HasAnyShadingModel({ MSM_ClearCoat, MSM_Eye });
+		Active = ShadingModels.HasAnyShadingModel({ MSM_ClearCoat, MSM_Eye ,MSM_DoubleLayerWater });
 		break;
 	case MP_EmissiveColor:
 		// Emissive is always active, even for light functions and post process materials, 

@@ -279,7 +279,8 @@ FMaterialRelevance UMaterialInterface::GetRelevance_Internal(const UMaterial* Ma
 
 		const bool bIsMobile = InFeatureLevel <= ERHIFeatureLevel::ES3_1;
 		const bool bUsesSingleLayerWaterMaterial = MaterialResource->GetShadingModels().HasShadingModel(MSM_SingleLayerWater);
-		const bool IsSinglePassWaterTranslucent = bIsMobile && bUsesSingleLayerWaterMaterial;
+		const bool bUsesDoubleLayerWaterMaterial = MaterialResource->GetShadingModels().HasShadingModel(MSM_DoubleLayerWater);
+		const bool IsSinglePassWaterTranslucent = bIsMobile && (bUsesSingleLayerWaterMaterial || bUsesDoubleLayerWaterMaterial);
 		const bool bIsMobilePixelProjectedTranslucent = MaterialResource->IsUsingPlanarForwardReflections() 
 														&& IsUsingMobilePixelProjectedReflection(GetFeatureLevelShaderPlatform(InFeatureLevel));
 
@@ -351,6 +352,7 @@ FMaterialRelevance UMaterialInterface::GetRelevance_Internal(const UMaterial* Ma
 			MaterialRelevance.bUsesDistanceCullFade = MaterialResource->MaterialUsesDistanceCullFade_GameThread();
 			MaterialRelevance.bUsesSkyMaterial = Material->bIsSky;
 			MaterialRelevance.bUsesSingleLayerWaterMaterial = bUsesSingleLayerWaterMaterial;
+			MaterialRelevance.bUsesDoubleLayerWaterMaterial = bUsesDoubleLayerWaterMaterial;
 			MaterialRelevance.bUsesAnisotropy = bUsesAnisotropy;
 		}
 		return MaterialRelevance;

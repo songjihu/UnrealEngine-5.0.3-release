@@ -548,6 +548,11 @@ static void GetMaterialEnvironment(EShaderPlatform InPlatform,
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_SINGLELAYERWATER"), TEXT("1"));
 			NumSetMaterials++;
 		}
+		if (ShadingModels.HasShadingModel(MSM_DoubleLayerWater))
+		{
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_DoubleLAYERWATER"), TEXT("1"));
+			NumSetMaterials++;
+		}
 		if (ShadingModels.HasShadingModel(MSM_ThinTranslucent))
 		{
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_THIN_TRANSLUCENT"), TEXT("1"));
@@ -556,7 +561,7 @@ static void GetMaterialEnvironment(EShaderPlatform InPlatform,
 			bMaterialRequestsDualSourceBlending = true;
 		}
 
-		if (ShadingModels.HasShadingModel(MSM_SingleLayerWater) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(InPlatform))
+		if ((ShadingModels.HasShadingModel(MSM_SingleLayerWater)|| ShadingModels.HasShadingModel(MSM_DoubleLayerWater)) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(InPlatform))
 		{
 			OutEnvironment.SetDefine(TEXT("DISABLE_FORWARD_LOCAL_LIGHTS"), TEXT("1"));
 		}

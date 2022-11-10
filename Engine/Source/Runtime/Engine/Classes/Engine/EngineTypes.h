@@ -583,7 +583,8 @@ enum EMaterialShadingModel
 	MSM_Hair					UMETA(DisplayName="Hair"),
 	MSM_Cloth					UMETA(DisplayName="Cloth"),
 	MSM_Eye						UMETA(DisplayName="Eye"),
-	MSM_SingleLayerWater		UMETA(DisplayName="SingleLayerWater"),
+	MSM_SingleLayerWater		UMETA(DisplayName = "SingleLayerWater"),
+	MSM_DoubleLayerWater		UMETA(DisplayName="DoubleLayerWater"),  // 自定义双层水渲染模型
 	MSM_ThinTranslucent			UMETA(DisplayName="Thin Translucent"),
 	MSM_Strata					UMETA(DisplayName="Strata", Hidden),
 	/** Number of unique shading models. */
@@ -652,6 +653,7 @@ enum EStrataShadingModel
 	SSM_VolumetricFogCloud		UMETA(DisplayName = "VolumetricFogCloud"),
 	SSM_Hair					UMETA(DisplayName = "Hair"),
 	SSM_SingleLayerWater		UMETA(DisplayName = "SingleLayerWater"),
+	SSM_DoubleLayerWater		UMETA(DisplayName = "DoubleLayerWater"),
 	/** Number of unique shading models. */
 	SSM_NUM						UMETA(Hidden),
 };
