@@ -550,7 +550,7 @@ static void GetMaterialEnvironment(EShaderPlatform InPlatform,
 		}
 		if (ShadingModels.HasShadingModel(MSM_DoubleLayerWater))
 		{
-			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_DoubleLAYERWATER"), TEXT("1"));
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_DOUBLELAYERWATER"), TEXT("1"));
 			NumSetMaterials++;
 		}
 		if (ShadingModels.HasShadingModel(MSM_ThinTranslucent))

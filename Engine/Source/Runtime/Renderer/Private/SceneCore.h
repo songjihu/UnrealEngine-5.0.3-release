@@ -174,7 +174,7 @@ private:
 class FStaticMeshBatchRelevance
 {
 public:
-	FStaticMeshBatchRelevance(const FStaticMeshBatch& StaticMesh, float InScreenSize, bool InbSupportsCachingMeshDrawCommands, bool InbUseSkyMaterial, bool bInUseSingleLayerWaterMaterial, bool bInUseAnisotropy, bool bInSupportsNaniteRendering, bool bInSupportsGPUScene, ERHIFeatureLevel::Type FeatureLevel)
+	FStaticMeshBatchRelevance(const FStaticMeshBatch& StaticMesh, float InScreenSize, bool InbSupportsCachingMeshDrawCommands, bool InbUseSkyMaterial, bool bInUseSingleLayerWaterMaterial, bool bInUseDoubleLayerWaterMaterial, bool bInUseAnisotropy, bool bInSupportsNaniteRendering, bool bInSupportsGPUScene, ERHIFeatureLevel::Type FeatureLevel)
 		: Id(StaticMesh.Id)
 		, ScreenSize(InScreenSize)
 		, NumElements(StaticMesh.Elements.Num())
@@ -188,6 +188,7 @@ public:
 		, bUseAsOccluder(StaticMesh.bUseAsOccluder)
 		, bUseSkyMaterial(InbUseSkyMaterial)
 		, bUseSingleLayerWaterMaterial(bInUseSingleLayerWaterMaterial)
+		, bUseDoubleLayerWaterMaterial(bInUseDoubleLayerWaterMaterial)
 		, bUseHairStrands(StaticMesh.UseForHairStrands(FeatureLevel))
 		, bUseAnisotropy(bInUseAnisotropy)
 		, bRenderToVirtualTexture(StaticMesh.bRenderToVirtualTexture)
@@ -228,6 +229,7 @@ public:
 	uint8 bUseAsOccluder	: 1; // User hint whether it's a good occluder.
 	uint8 bUseSkyMaterial	: 1; // Whether this batch uses a Sky material or not.
 	uint8 bUseSingleLayerWaterMaterial : 1; // Whether this batch uses a water material or not.
+	uint8 bUseDoubleLayerWaterMaterial : 1; // Whether this batch uses a water material or not.
 	uint8 bUseHairStrands	: 1; // Whether it contains hair strands geometry.
 	uint8 bUseAnisotropy	: 1; // Whether material uses anisotropy parameter.
 

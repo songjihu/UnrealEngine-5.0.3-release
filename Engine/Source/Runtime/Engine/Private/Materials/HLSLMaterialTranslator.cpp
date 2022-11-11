@@ -1058,9 +1058,9 @@ bool FHLSLMaterialTranslator::Translate()
 			{
 				Errorf(TEXT("SingleLayerWater materials must be opaque or masked."));
 			}
-			if (!MaterialShadingModels.HasOnlyShadingModel(MSM_SingleLayerWater) || !MaterialShadingModels.HasOnlyShadingModel(MSM_DoubleLayerWater))
+			if (!(MaterialShadingModels.HasOnlyShadingModel(MSM_SingleLayerWater) || MaterialShadingModels.HasOnlyShadingModel(MSM_DoubleLayerWater)))
 			{
-				Errorf(TEXT("SingleLayerWater materials cannot be combined with other shading models.")); // Simply untested for now
+				Errorf(TEXT("SingleLayerWater/DoubleLayerWater materials cannot be combined with other shading models.")); // Simply untested for now
 			}
 
 			static const auto CVarStrata = IConsoleManager::Get().FindTConsoleVariableDataInt(TEXT("r.Strata"));
@@ -9139,9 +9139,9 @@ int32 FHLSLMaterialTranslator::SceneDepthWithoutWater(int32 Offset, int32 Viewpo
 		return Errorf(TEXT("Cannot read scene depth without water from the vertex shader."));
 	}
 
-	if (!Material->GetShadingModels().HasShadingModel(MSM_SingleLayerWater) || !Material->GetShadingModels().HasShadingModel(MSM_DoubleLayerWater))
+	if (!(Material->GetShadingModels().HasShadingModel(MSM_SingleLayerWater) || Material->GetShadingModels().HasShadingModel(MSM_DoubleLayerWater)))
 	{
-		return Errorf(TEXT("Can only read scene depth below water when material Shading Model is Single Layer Water."));
+		return Errorf(TEXT("Can only read scene depth below water when material Shading Model is Single/Double Layer Water."));
 	}
 	
 	if (Material->GetMaterialDomain() != MD_Surface)
