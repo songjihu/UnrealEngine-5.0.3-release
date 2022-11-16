@@ -43,6 +43,9 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 	Output.WaterToSceneTransmittance = 1.0f;
 	Output.WaterToSceneToLightTransmittance = 1.0f;
 
+    float BackDepth = GetMaterialCustomData0(MaterialParameters);
+    float BackDepthEnable = GetMaterialCustomData1(MaterialParameters);
+
 	float2 ViewportUV = MaterialParameters.ViewBufferUV;
 
 	if (WaterVisibility > 0.0f)
@@ -69,7 +72,7 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 		ViewportUV = clamp(ViewportUV, SceneWithoutSingleLayerWaterMinUV, SceneWithoutSingleLayerWaterMaxUV);
 
 		float PixelSceneDepth = SceneDepthWithoutSingleLayerWaterTexture.SampleLevel(SceneDepthWithoutSingleLayerWaterSampler, ViewportUV, 0).x * SINGLE_LAYER_WATER_DEPTH_SCALE;
-		
+
 		float2 Refraction = GetMaterialRefraction(PixelMaterialInputs); // X = IOR, Y = Refraction Bias
 		float2 BufferUVDistortion = ComputeBufferUVDistortion(
 			MaterialParameters, PixelMaterialInputs, ResolvedView,
@@ -100,7 +103,10 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 		const float SceneDeviceZ = ConvertToDeviceZ(SceneDepth);
 
 #endif // !SIMPLE_SINGLE_LAYER_WATER
-
+        // 增加自定义判断
+        if(BackDepthEnable>0.1f){
+            SceneDepth = BackDepth;
+        }
 		const float BehindWaterDeltaDepth = CameraIsUnderWater ? WaterDepth : max(0.0f, SceneDepth - WaterDepth);
 
 #if STRATA_INLINE_SINGLELAYERWATER
@@ -219,6 +225,8 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 		Output.WaterToSceneTransmittance = Transmittance;
 		Output.WaterToSceneToLightTransmittance = Transmittance * MeanTransmittanceToLightSources;
 	}
-
+	//Output.Luminance = GetMaterialCustomData0(MaterialParameters);
+	//Output.WaterToSceneTransmittance = 1.0f;
+	//Output.WaterToSceneToLightTransmittance = 1.0f;// TEST
 	return Output;
 }

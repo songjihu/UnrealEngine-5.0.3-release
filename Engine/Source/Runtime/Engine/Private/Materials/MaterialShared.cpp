@@ -4652,11 +4652,13 @@ FText FMaterialAttributeDefinitionMap::GetAttributeOverrideForMaterial(const FGu
 		CustomPinNames.Add({MSM_Eye, "Iris Mask"});
 		CustomPinNames.Add({ MSM_SubsurfaceProfile, "Curvature" });
 		CustomPinNames.Add({ MSM_DoubleLayerWater, "DLW Custom0" });
+		CustomPinNames.Add({ MSM_SingleLayerWater, "SLW Custom0" });
 		return FText::FromString(GetPinNameFromShadingModelField(Material->GetShadingModels(), CustomPinNames, "Custom Data 0"));
 	case MP_CustomData1:
 		CustomPinNames.Add({ MSM_ClearCoat, "Clear Coat Roughness" });
 		CustomPinNames.Add({MSM_Eye, "Iris Distance"});
 		CustomPinNames.Add({ MSM_DoubleLayerWater, "DLW Custom1" });
+		CustomPinNames.Add({ MSM_SingleLayerWater, "SLW Custom1" });
 		return FText::FromString(GetPinNameFromShadingModelField(Material->GetShadingModels(), CustomPinNames, "Custom Data 1"));
 	case MP_AmbientOcclusion:
 		return LOCTEXT("AmbientOcclusion", "Ambient Occlusion");

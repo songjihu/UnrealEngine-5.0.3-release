@@ -317,6 +317,8 @@ bool HasCustomGBufferData(int ShadingModelID)
 		|| ShadingModelID == SHADINGMODELID_TWOSIDED_FOLIAGE
 		|| ShadingModelID == SHADINGMODELID_HAIR
 		|| ShadingModelID == SHADINGMODELID_CLOTH
+		|| ShadingModelID == SHADINGMODELID_DOUBLELAYERWATER  // 开始customdata的识别
+		|| ShadingModelID == SHADINGMODELID_SINGLELAYERWATER  // 开始customdata的识别
 		|| ShadingModelID == SHADINGMODELID_EYE;
 }
 

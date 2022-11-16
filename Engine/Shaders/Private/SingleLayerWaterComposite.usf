@@ -67,6 +67,11 @@ SingleLayerWaterCompositeOutput SingleLayerWaterComposite(float2 BufferUV, float
 		const float2 SceneNoWaterUV = clamp(BufferUV, SceneNoWaterMinMaxUV.xy, SceneNoWaterMinMaxUV.zw);
 
 		float OpaqueDepth = SceneNoWaterDepthTexture.SampleLevel(SceneNoWaterDepthSampler, SceneNoWaterUV, 0).x * SINGLE_LAYER_WATER_DEPTH_SCALE;
+		float BackDepth = GBuffer.CustomData.r;
+		float BackDepthEnable = GBuffer.CustomData.g;
+		if (BackDepthEnable > 0.2){
+			OpaqueDepth = BackDepth;
+		}
 		float WaterDepth = SceneDepth;
 
 		float DeltaDepth = CameraIsUnderWater ? WaterDepth : OpaqueDepth - WaterDepth;	// Inverted depth
@@ -130,8 +135,13 @@ SingleLayerWaterCompositeOutput SingleLayerWaterComposite(float2 BufferUV, float
 	{
 		const float2 SceneNoWaterUV = clamp(BufferUV, SceneNoWaterMinMaxUV.xy, SceneNoWaterMinMaxUV.zw);
 
-		float OpaqueDepth = SceneNoWaterDepthTexture.SampleLevel(SceneNoWaterDepthSampler, SceneNoWaterUV, 0).x * SINGLE_LAYER_WATER_DEPTH_SCALE;
-		float WaterDepth = GBuffer.Depth;
+		float OpaqueDepth = SceneNoWaterDepthTexture.SampleLevel(SceneNoWaterDepthSampler, SceneNoWaterUV, 0).x * SINGLE_LAYER_WATER_DEPTH_SCALE; // 获取了没有水材质时的深度
+		float BackDepth = GBuffer.CustomData.r;
+		float BackDepthEnable = GBuffer.CustomData.g;
+		if (BackDepthEnable > 0.2){
+			OpaqueDepth = BackDepth;
+		}
+		float WaterDepth = GBuffer.Depth;  // 带有水材质的深度
 
 		float DeltaDepth = CameraIsUnderWater ? WaterDepth : OpaqueDepth - WaterDepth;	// Inverted depth
 		if (DeltaDepth > 0.0)
@@ -209,7 +219,8 @@ SingleLayerWaterCompositeOutput SingleLayerWaterComposite(float2 BufferUV, float
 	{
 		Output.Clip = -1.0f;
 	}
-
+	//Output.LuminanceTransmittance = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	//Output.Clip = 1.0f; // no clipping TEST
 	return Output;
 }
 
@@ -368,6 +379,7 @@ void SingleLayerWaterCompositePS(
 
 	clip(Result.Clip); // Since this shader does not write to depth or stencil it should still benefit from EarlyZ (See AMD depth-in-depth documentation)
 	OutColor = Result.LuminanceTransmittance;
+	//OutColor = float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 

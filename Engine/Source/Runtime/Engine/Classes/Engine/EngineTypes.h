@@ -584,9 +584,9 @@ enum EMaterialShadingModel
 	MSM_Cloth					UMETA(DisplayName="Cloth"),
 	MSM_Eye						UMETA(DisplayName="Eye"),
 	MSM_SingleLayerWater		UMETA(DisplayName = "SingleLayerWater"),
-	MSM_DoubleLayerWater		UMETA(DisplayName="DoubleLayerWater"),  // 自定义双层水渲染模型
 	MSM_ThinTranslucent			UMETA(DisplayName="Thin Translucent"),
 	MSM_Strata					UMETA(DisplayName="Strata", Hidden),
+	MSM_DoubleLayerWater		UMETA(DisplayName = "DoubleLayerWater"),  // 自定义双层水渲染模型
 	/** Number of unique shading models. */
 	MSM_NUM						UMETA(Hidden),
 	/** Shading model will be determined by the Material Expression Graph,

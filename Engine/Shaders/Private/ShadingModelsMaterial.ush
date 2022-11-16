@@ -138,6 +138,20 @@ void SetGBufferForShadingModel(
 		GBuffer.IndirectIrradiance *= 1 - GBuffer.CustomData.a;
 	}
 #endif
+#if MATERIAL_SHADINGMODEL_DOUBLELAYERWATER
+	else if (ShadingModel == SHADINGMODELID_DOUBLELAYERWATER)
+	{
+		GBuffer.CustomData.r = GetMaterialCustomData0(MaterialParameters);
+		GBuffer.CustomData.g = GetMaterialCustomData1(MaterialParameters);  // 从自定义脚位获取2个half值
+	}
+#endif
+#if MATERIAL_SHADINGMODEL_SINGLELAYERWATER
+	else if (ShadingModel == SHADINGMODELID_SINGLELAYERWATER)
+	{
+		GBuffer.CustomData.r = GetMaterialCustomData0(MaterialParameters);
+		GBuffer.CustomData.g = GetMaterialCustomData1(MaterialParameters);  // 从自定义脚位获取2个half值
+	}
+#endif
 #if MATERIAL_SHADINGMODEL_EYE
 	else if (ShadingModel == SHADINGMODELID_EYE)
 	{

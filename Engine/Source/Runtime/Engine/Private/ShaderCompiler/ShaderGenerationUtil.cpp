@@ -1783,13 +1783,14 @@ static void DetermineUsedMaterialSlots(
 	{
 		// single layer water uses standard slots
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+		Slots[GBS_CustomData] = bUseCustomData;
 	}
 
 	if (Mat.MATERIAL_SHADINGMODEL_DOUBLELAYERWATER)
 	{
 		// single layer water uses standard slots
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
-		Slots[GBS_CustomData] = true;
+		Slots[GBS_CustomData] = bUseCustomData;
 	}
 
 	// doesn't write to GBuffer

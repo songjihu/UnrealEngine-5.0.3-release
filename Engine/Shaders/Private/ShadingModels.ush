@@ -817,6 +817,7 @@ FDirectLighting IntegrateBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, 
 	{
 		case SHADINGMODELID_DEFAULT_LIT:
 		case SHADINGMODELID_SINGLELAYERWATER:
+		case SHADINGMODELID_DOUBLELAYERWATER:
 		case SHADINGMODELID_THIN_TRANSLUCENT:
 			return DefaultLitBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
 		case SHADINGMODELID_SUBSURFACE:

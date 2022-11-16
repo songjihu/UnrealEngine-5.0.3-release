@@ -1065,7 +1065,7 @@ void FPixelShaderInOut_MainPS(
 	MaterialParameters.WorldNormal = StrataPixelHeader.SharedLocalBases.Normals[BSDF_GETSHAREDLOCALBASISID(SLWBSDF)];
 	MaterialParameters.TangentToWorld[2] = MaterialParameters.WorldNormal;
 	Anisotropy = 0.0f;
-	ShadingModel = MATERIAL_SHADINGMODEL_SINGLELAYERWATER;
+	ShadingModel = MATERIAL_SHADINGMODEL_SINGLELAYERWATER; // 这里给了单层水材质 shadingmodelID 如果不像这样给 case给到了0
 #endif
 
 	float DBufferOpacity = 1.0f;
