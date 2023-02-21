@@ -70,7 +70,8 @@ SingleLayerWaterCompositeOutput SingleLayerWaterComposite(float2 BufferUV, float
 		float BackDepth = GBuffer.CustomData.r;
 		float BackDepthEnable = GBuffer.CustomData.g;
 		if (BackDepthEnable > 0.2){
-			OpaqueDepth = BackDepth;
+			// 越近深度值越小，取近处的那一个
+			OpaqueDepth = min(BackDepth, OpaqueDepth);
 		}
 		float WaterDepth = SceneDepth;
 
@@ -138,8 +139,9 @@ SingleLayerWaterCompositeOutput SingleLayerWaterComposite(float2 BufferUV, float
 		float OpaqueDepth = SceneNoWaterDepthTexture.SampleLevel(SceneNoWaterDepthSampler, SceneNoWaterUV, 0).x * SINGLE_LAYER_WATER_DEPTH_SCALE; // 获取了没有水材质时的深度
 		float BackDepth = GBuffer.CustomData.r;
 		float BackDepthEnable = GBuffer.CustomData.g;
-		if (BackDepthEnable > 0.2){
-			OpaqueDepth = BackDepth;
+		if (BackDepthEnable > 0.2){ 
+			// 越近深度值越小，取近处的那一个
+			OpaqueDepth = min(BackDepth, OpaqueDepth);
 		}
 		float WaterDepth = GBuffer.Depth;  // 带有水材质的深度
 

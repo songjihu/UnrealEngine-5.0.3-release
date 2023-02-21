@@ -50,7 +50,7 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 
 	if (WaterVisibility > 0.0f)
 	{
-		float WaterDepth = MaterialParameters.ScreenPosition.w; // Scene depth with Pixel-Depth-Offset taken into account is in ScreenPosition.w already
+		float WaterDepth = MaterialParameters.ScreenPosition.w; // 2.16 水面位置的深度 Scene depth with Pixel-Depth-Offset taken into account is in ScreenPosition.w already 
 #if SIMPLE_SINGLE_LAYER_WATER
 
 #if SINGLE_LAYER_WATER_SIMPLE_FORWARD 
@@ -79,8 +79,13 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 			MaterialParameters.WorldNormal,
 			DistortionParams, ViewportUV, Refraction, false, EyeIndex);
 		PostProcessUVDistortion(MaterialParameters, PixelMaterialInputs, PixelSceneDepth, BufferUVDistortion, Refraction);
-		// Also reduce refraction according to water thickness
-		BufferUVDistortion *= saturate((PixelSceneDepth - WaterDepth) * 1.0 / 30.0f);// *(1 - saturate(WaterDepth * 1.0 / 2000.0f));
+		// 2.16 根据水的深度调整折射 Also reduce refraction according to water thickness 
+		if(BackDepthEnable>0.1f){
+            //WaterDepth = min(WaterDepth, WaterDepth + PixelSceneDepth - BackDepth);//2.16 
+			BufferUVDistortion *= saturate((min(BackDepth, PixelSceneDepth) - WaterDepth) * 1.0 / 30.0f);// *(1 - saturate(WaterDepth * 1.0 / 2000.0f)); // 折射扭曲强度
+        }else{
+			BufferUVDistortion *= saturate((PixelSceneDepth - WaterDepth) * 1.0 / 30.0f);// *(1 - saturate(WaterDepth * 1.0 / 2000.0f));
+		}
 
 		const float2 DistortedUV = clamp(ViewportUV + BufferUVDistortion, SceneWithoutSingleLayerWaterMinUV, SceneWithoutSingleLayerWaterMaxUV);
 
@@ -97,16 +102,17 @@ WaterVolumeLightingOutput EvaluateWaterVolumeLighting(
 		{
 			// Pick the depth furthest away to make sure we pick a depth sample under water
 			SceneDepth = max(max(SceneDepth4.x, SceneDepth4.y), max(SceneDepth4.z, SceneDepth4.w));
+			// 增加自定义判断
+			if(BackDepthEnable>0.1f){
+				SceneDepth = min(BackDepth, SceneDepth);//2.16 取较小值
+			}
 			ViewportUV = DistortedUV;
 		}
 
 		const float SceneDeviceZ = ConvertToDeviceZ(SceneDepth);
 
 #endif // !SIMPLE_SINGLE_LAYER_WATER
-        // 增加自定义判断
-        if(BackDepthEnable>0.1f){
-            SceneDepth = BackDepth;
-        }
+        
 		const float BehindWaterDeltaDepth = CameraIsUnderWater ? WaterDepth : max(0.0f, SceneDepth - WaterDepth);
 
 #if STRATA_INLINE_SINGLELAYERWATER
